@@ -1,0 +1,58 @@
+{
+  // Schema for validation & autocomplete in editors
+  "$schema": "https://json.schemastore.org/tsconfig",
+
+  // Display name for this config
+  "display": "Next.js",
+
+  // Inherit settings from a base config
+  "extends": "./tsconfig.base.json",
+
+  "compilerOptions": {
+    // Compile to ES2017 (widely supported baseline for modern JS)
+    "target": "ES2017",
+
+    // Include DOM APIs, iterable DOM collections, and latest JS features
+    "lib": ["dom", "DOM.Iterable", "ESNext"],
+
+    // Allow JavaScript files alongside TypeScript
+    "allowJs": true,
+
+    // Skip type checking of .d.ts files (faster builds)
+    "skipLibCheck": true,
+
+    // Enable all strict type-checking options
+    "strict": true,
+
+    // Do not emit compiled JS files (Next.js handles build output)
+    "noEmit": true,
+
+    // Enable faster builds by reusing prior build info
+    "incremental": true,
+
+    // Use latest module system (ESM)
+    "module": "esnext",
+
+    // Allow importing JSON files directly
+    "resolveJsonModule": true,
+
+    // Ensure each file can be transpiled independently (needed for Babel/Next.js)
+    "isolatedModules": true,
+
+    // Preserve JSX syntax for Next.js to handle (instead of compiling to JS)
+    "jsx": "preserve",
+
+    // Next.js-specific TypeScript plugin for better integration
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
+  },
+
+  // Files/folders included in compilation
+  "include": ["src", "next-env.d.ts"],
+
+  // Exclude node_modules from compilation
+  "exclude": ["node_modules"]
+}

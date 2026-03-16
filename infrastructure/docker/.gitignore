@@ -1,0 +1,24 @@
+#Environment files
+.env
+
+# Data files
+../../data/postgres/*
+../../data/redis/*
+../../data/pgadmin/*
+../../infrastructure/backups/*
+
+# Logs
+*.log 
+
+# keep Directory Structure
+!.gitkeep
+
+Add .gitkeep files:
+
+touch data/postgres/.gitkeep
+touch data/redis/.gitkeep
+touch data/pgadmin/.gitkeep
+touch infrastructure/backups/.gitkeep
+
+
+

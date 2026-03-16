@@ -1,0 +1,72 @@
+{
+  // Schema for validation & autocomplete in editors
+  "$schema": "https://json.schemastore.org/tsconfig",
+
+  // Display name for this config
+  "display": "NestJS",
+
+  // Inherit settings from a base config
+  "extends": "./tsconfig.base.json",
+
+  "compilerOptions": {
+    // Compile to modern JavaScript (ES2021 features)
+    "target": "ES2021",
+
+    // Use CommonJS module system (Node.js default)
+    "module": "CommonJS",
+
+    // Include ES2021 standard library types
+    "lib": ["ES2021"],
+
+    // Generate .d.ts type declaration files
+    "declaration": true,
+
+    // Strip comments from emitted JS
+    "removeComments": true,
+
+    // Emit metadata for decorators (needed by NestJS for DI)
+    "emitDecoratorMetadata": true,
+
+    // Enable experimental decorator support
+    "experimentalDecorators": true,
+
+    // Allow default imports from modules without them
+    "allowSyntheticDefaultImports": true,
+
+    // Generate source maps for debugging
+    "sourceMap": true,
+
+    // Output compiled files into ./dist
+    "outDir": "./dist",
+
+    // Base directory for module resolution
+    "baseUrl": "./",
+
+    // Enable faster builds by reusing prior build info
+    "incremental": true,
+
+    // Enable all strict type-checking options
+    "strict": true,
+
+    // Allow default imports from CommonJS modules
+    "esModuleInterop": true,
+
+    // Skip type checking of .d.ts files (faster builds)
+    "skipLibCheck": true,
+
+    // Enforce handling of null and undefined
+    "strictNullChecks": true,
+
+    // Disable strict checks for bind/call/apply methods
+    "strictBindCallApply": false,
+
+    // Disallow variables with implicit 'any' type
+    "noImplicitAny": true,
+
+    // Do not enforce consistent casing in file names
+    "forceConsistentCasingInFileNames": false,
+
+    // Do not enforce handling of fallthrough cases in switch statements
+    "noFallthroughCasesInSwitch": false
+  }
+}

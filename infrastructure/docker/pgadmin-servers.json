@@ -1,0 +1,15 @@
+{
+    "Servers": {
+        "1": {
+            "Name": "School Management - Development",
+            "Group": "Development",
+            "Host": "postgres",
+            "Port": 5432,
+            "MaintenanceDB": "postgres",
+            "Username": "school_admin",
+            "SSLMode": "prefer",
+            "PassFile": "/tmp/pgpassfile"
+        }
+    }
+}
+

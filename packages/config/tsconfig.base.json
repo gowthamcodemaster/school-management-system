@@ -1,0 +1,75 @@
+{
+  // Schema for validation & autocomplete in editors
+  "$schema": "https://json.schemastore.org/tsconfig",
+
+  // Display name for this config
+  "display": "Default",
+
+  "compilerOptions": {
+    // Not using project references (multi-project builds)
+    "composite": true,
+
+    // Generate .d.ts type declaration files (useful for libraries)
+    "declaration": true,
+
+    // Generate source maps for declaration files
+    "declarationMap": true,
+
+    // Allow default imports from CommonJS modules
+    "esModuleInterop": true,
+
+    // Enforce consistent file name casing across imports
+    "forceConsistentCasingInFileNames": true,
+
+    // Do not embed source code inside source maps
+    "inlineSources": false,
+
+    // Ensure each file can be transpiled independently (needed for Babel, etc.)
+    "isolatedModules": true,
+
+    // Allow unused local variables (not flagged as errors)
+    "noUnusedLocals": false,
+
+    // Allow unused function parameters
+    "noUnusedParameters": false,
+
+    // Keep output clean when running `tsc --watch`
+    "preserveWatchOutput": true,
+
+    // Enforce handling of null and undefined
+    "strictNullChecks": true,
+
+    // Compile to modern JavaScript (ES2021 features)
+    "target": "ES2021",
+
+    // Use latest module system (ESM)
+    "module": "ESNext",
+
+    // Include modern JS + browser APIs in type checking
+    "lib": ["ESNext", "DOM"],
+
+    // Resolve modules like Node.js does
+    "moduleResolution": "Node",
+
+    // Enable all strict type-checking options
+    "strict": true,
+
+    // Skip type checking of .d.ts files (faster builds)
+    "skipLibCheck": true,
+
+    // Allow importing JSON files directly
+    "resolveJsonModule": true,
+
+    // Do not emit compiled JS files (only type-checking)
+    "noEmit": true,
+
+    // Enable faster builds by reusing prior build info
+    "incremental": true,
+
+    // Store incremental build metadata here
+    "tsBuildInfoFile": ".tsbuildinfo",
+
+    // Base directory for module resolution
+    "baseUrl": "."
+  }
+}

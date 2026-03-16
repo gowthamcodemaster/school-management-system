@@ -1,0 +1,7 @@
+# pnpm workspace configuration
+
+packages:
+  # All apps
+  - 'apps/*'
+  # All packages  
+  - 'packages/*'

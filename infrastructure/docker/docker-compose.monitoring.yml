@@ -1,0 +1,54 @@
+version: '3.9'
+
+services:
+  #Prometheus - Monitoring Service
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus_monitoring
+    restart: unless-stopped
+
+    #ports mapping
+    ports:
+      - "9090:9090"
+
+    #volume mapping
+    volumes:
+      - ../monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+
+    command: 
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+
+    #networking
+    networks:
+      - school_network
+
+  #Grafana - Visualization Service
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana_monitoring
+    restart: unless-stopped
+
+    #Environmental variables for Grafana setup
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD = admin
+      - GF_USERS_ALLOW_SIGN_UP= false
+
+    #volume mapping
+    volumes:
+      - grafana-data:/var/lib/grafana
+
+    #networking
+    networks:
+      - school_network
+  
+#Define volumes (persist data)
+volumes:
+  prometheus-data:
+  grafana-data:
+
+#Define networks (isolate services)
+networks: 
+  school_network:
+    external: true
