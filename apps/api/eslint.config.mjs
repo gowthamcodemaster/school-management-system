@@ -1,35 +1,23 @@
-// @ts-check
-import eslint from '@eslint/js';
-import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
-import globals from 'globals';
+// apps/api/eslint.config.mjs
+import { nestjs, ignores } from '@school/config/eslint-preset';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  {
-    ignores: ['eslint.config.mjs'],
-  },
-  eslint.configs.recommended,
+  
+{ ignores: ['eslint.config.mjs', '**/*.js', ...ignores] },
+  // Spread the shared nestjs preset (includes base + security + prettier)
+  ...nestjs,
+
+  // NestJS-specific typed linting — keep this here as it needs local tsconfig
   ...tseslint.configs.recommendedTypeChecked,
-  eslintPluginPrettierRecommended,
   {
     languageOptions: {
-      globals: {
-        ...globals.node,
-        ...globals.jest,
-      },
-      sourceType: 'commonjs',
       parserOptions: {
-        projectService: true,
-        tsconfigRootDir: import.meta.dirname,
-      },
+       projectService: {
+      allowDefaultProject: ['src/*.spec.ts', 'test/*.spec.ts'],
     },
-  },
-  {
-    rules: {
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-floating-promises': 'warn',
-      '@typescript-eslint/no-unsafe-argument': 'warn',
-      "prettier/prettier": ["error", { endOfLine: "auto" }],
+    tsconfigRootDir: import.meta.dirname,
+      },
     },
   },
 );

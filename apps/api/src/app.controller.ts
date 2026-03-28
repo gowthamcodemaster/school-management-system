@@ -6,9 +6,7 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get()
-  async getHello(): Promise<any> {
-    let healthResval: any = '';
-    await this.appService.getHealth().then((value) => (healthResval = value));
-    return healthResval;
+  async getHello(): Promise<unknown> {
+    return this.appService.getHealth();
   }
 }

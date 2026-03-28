@@ -1,0 +1,56 @@
+# .gitleaks.toml — place at monorepo root
+# Docs: https://github.com/gitleaks/gitleaks
+
+title = "Gitleaks Config"
+
+[extend]
+# Use the default ruleset as a base
+useDefault = true
+
+# ── Custom rules for your stack ────────────────────────────────────
+[[rules]]
+id          = "jwt-secret"
+description = "Hardcoded JWT secret"
+regex       = '''(?i)(jwt[_-]?secret|jwt[_-]?key)\s*=\s*['"][^'"]{8,}['"]'''
+tags        = ["jwt", "secret"]
+
+[[rules]]
+id          = "database-url"
+description = "Hardcoded database connection string"
+regex       = '''postgres(?:ql)?:\/\/[^:]+:[^@]+@[^/\s]+'''
+tags        = ["database", "credentials"]
+
+[[rules]]
+id          = "redis-url"
+description = "Hardcoded Redis URL with credentials"
+regex       = '''redis:\/\/[^:]+:[^@]+@[^/\s]+'''
+tags        = ["redis", "credentials"]
+
+[[rules]]
+id          = "nextauth-secret"
+description = "Hardcoded NextAuth secret"
+regex       = '''(?i)nextauth[_-]?secret\s*=\s*['"][^'"]{8,}['"]'''
+tags        = ["nextauth", "secret"]
+
+# ── Allowlist (things that are OK to commit) ───────────────────────
+[allowlist]
+description = "Global allowlist"
+
+# Ignore example env files — these are meant to show structure
+paths = [
+  ".env.example",
+  ".env.*.example",
+  "k6/auth-load-test.js",  # test credentials are obvious fakes
+]
+
+# Ignore test fake values
+regexes = [
+  '''test\.local''',
+  '''localhost''',
+  '''example\.com''',
+  '''TestPassword123!''',
+]
+
+# Ignore these commit SHAs (use if you have a known historical leak
+# that's already been rotated — add the commit hash here)
+commits = []

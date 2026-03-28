@@ -3,5 +3,10 @@
 packages:
   # All apps
   - 'apps/*'
-  # All packages  
+  # All packages
   - 'packages/*'
+
+# Migrated from apps/web/pnpm-workspace.yaml
+ignoredBuiltDependencies:
+  - sharp
+  - unrs-resolver

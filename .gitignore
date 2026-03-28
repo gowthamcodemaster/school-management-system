@@ -1,56 +1,114 @@
-# Dependencies
+# ======================
+# ENVIRONMENT & SECRETS
+# ======================
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*.key
+*.cert
+*.p12
+*.pfx
 
+# ======================
+# DEPENDENCIES
+# ======================
 node_modules/
 .pnp
 .pnp.js
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
 
-# Testing
-coverage/
-*.log
-
-# Next.js
-.next/
-out/
+# ======================
+# BUILD OUTPUTS
+# ======================
+dist/
 build/
-dist/
+out/
+.next/
+.turbo/
+*.tsbuildinfo
+next-env.d.ts
 
-# NestJS
-dist/
+# ======================
+# PRISMA
+# ======================
+# Keep schema and migrations, ignore generated client
+prisma/generated/
+# Uncomment if you generate locally and don't commit it:
+# node_modules/.prisma/
 
-# Environment variables
-.env
-.env*.local
-.env.production
+# ======================
+# TESTING
+# ======================
+coverage/
+.nyc_output/
+test-results/
+playwright-report/
+playwright/.cache/
+blob-report/
+/k6/results/
 
-# IDE files
-.vscode/
-.idea/
+# ======================
+# LOGS
+# ======================
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ======================
+# CACHE & TEMP
+# ======================
+.cache/
+.eslintcache
+.stylelintcache
+.prettiercache
 *.swp
 *.swo
-*~
-
-# OS
 .DS_Store
 Thumbs.db
-
-# Turbo
-.turbo/
-
-#DB
-*.db
-*.db-shm
-*.db-wal
-
-# Docker Data
-infrastructure/docker/data/
-
-# Logs
-logs/
-*.log
-npm-debug.log*
-pnpm-debug.log*
-
-# Temporary files
 tmp/
 temp/
-*.tmp
+
+# ======================
+# IDE & EDITORS
+# ======================
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ======================
+# DOCKER
+# ======================
+# Keep docker-compose files, ignore override
+docker-compose.override.yml
+
+# ======================
+# OS
+# ======================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Desktop.ini
+
+# ======================
+# MISC
+# ======================
+*.tgz
+*.zip
+.clinic/

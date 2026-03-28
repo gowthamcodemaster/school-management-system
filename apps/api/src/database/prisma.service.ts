@@ -4,7 +4,12 @@ import {
   OnModuleDestroy,
   Logger,
 } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
+
+// Type for any Prisma model delegate that has a deleteMany method
+type ModelDelegate = {
+  deleteMany: () => Promise<unknown>;
+};
 
 @Injectable()
 export class PrismaService
@@ -41,13 +46,13 @@ export class PrismaService
       throw new Error('Cannot clean database in production!');
     }
 
-    // Get all model names from Prisma
     const modelNames = Object.keys(this).filter(
       (key) =>
         !key.startsWith('_') &&
         !key.startsWith('$') &&
         key !== 'constructor' &&
-        typeof key === 'object',
+        // eslint-disable-next-line security/detect-object-injection
+        typeof (this as Record<string, unknown>)[key] === 'object',
     ) as Array<
       keyof Omit<
         this,
@@ -63,13 +68,15 @@ export class PrismaService
       >
     >;
 
-    // Delete all records from each model
     await Promise.all(
       modelNames.map((modelName) => {
-        const model = this[modelName];
-        if (model && typeof model === 'object' && 'deleteMany' in model) {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-          return (model as any).deleteMany();
+        const model = (this as Record<string, unknown>)[modelName as string];
+        if (
+          model !== null &&
+          typeof model === 'object' &&
+          'deleteMany' in model
+        ) {
+          return (model as ModelDelegate).deleteMany();
         }
         return Promise.resolve();
       }),
@@ -82,10 +89,8 @@ export class PrismaService
    * Enable query logging
    */
   enableQueryLogging(): void {
-    this.$on('query' as never, (e: any) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    this.$on('query' as never, (e: Prisma.QueryEvent) => {
       this.logger.debug(`Query: ${e.query}`);
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       this.logger.debug(`Duration: ${e.duration}ms`);
     });
   }
