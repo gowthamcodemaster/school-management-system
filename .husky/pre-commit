@@ -1,1 +1,1 @@
-pnpm test
+NODE_OPTIONS=--max-old-space-size=4096 pnpm exec lint-staged --concurrent false
