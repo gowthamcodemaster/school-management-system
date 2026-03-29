@@ -4,6 +4,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import helmet from 'helmet';
 import compression from 'compression';
 import { AppModule } from './app.module';
+import { TimingInterceptor } from './common/interceptors/timing.interceptor';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
@@ -36,6 +37,10 @@ async function bootstrap() {
       },
     }),
   );
+
+  //Global Interceptors
+
+  app.useGlobalInterceptors(new TimingInterceptor());
 
   // Swagger Documentation
   if (process.env.NODE_ENV !== 'production') {

@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "prepare": "husky",
     "security:scan": "snyk test",
-    "load:test": "k6 run k6/auth-load-test.js"
+    "load:test": "k6 run k6/auth-load-test.js",
+    "perf:api": "clinic flame -- node apps/api/dist/main.js"
   },
   "dependencies": {
     "react": "^19.2.0",
@@ -21,6 +22,7 @@
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
+    "clinic": "^13.0.0",
     "eslint": "^9.39.1",
     "eslint-plugin-no-secrets": "^1.1.2",
     "eslint-plugin-prettier": "^5.5.5",
@@ -32,9 +34,18 @@
     "lint-staged": "^16.4.0",
     "prettier": "^3.8.1",
     "prettier-plugin-tailwindcss": "^0.5.14",
+    "snyk": "^1.1303.2",
     "vite": "npm:rolldown-vite@7.2.5"
   },
   "overrides": {
-    "vite": "npm:rolldown-vite@7.2.5"
+    "vite": "npm:rolldown-vite@7.2.5",
+    "effect": ">=3.20.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "vite": "npm:rolldown-vite@7.2.5",
+      "effect": ">=3.20.0",
+      "path-to-regexp": ">=8.4.0"
+    }
   }
 }

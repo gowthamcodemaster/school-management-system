@@ -15,14 +15,15 @@
     "test:coverage": "jest --coverage",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "clean": "rm -rf .next .turbo node_modules"
+    "clean": "rm -rf .next .turbo node_modules",
+    "analyze": "ANALYZE=true next build"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.17.19",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.323.0",
-    "next": "16.1.6",
+    "next": "16.1.7",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-icons": "^4.10.1",
@@ -30,6 +31,7 @@
     "zustand": "^4.5.0"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^16.2.1",
     "@next/eslint-plugin-next": "^16.2.1",
     "@school/config": "workspace:*",
     "@storybook/addon-a11y": "^10.2.19",

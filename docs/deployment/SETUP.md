@@ -7,7 +7,7 @@
 Place these files at your monorepo root:
 .gitignore
 .gitleaks.toml
-lint-staged.config.js
+lint-staged.config.cjs
 eslint-security.config.js → merge into apps/api/.eslintrc.js
 
 Place these in a /k6 folder:

@@ -49,8 +49,11 @@ regexes = [
   '''localhost''',
   '''example\.com''',
   '''TestPassword123!''',
+  '''abc123def456'''
 ]
 
 # Ignore these commit SHAs (use if you have a known historical leak
 # that's already been rotated — add the commit hash here)
-commits = []
+commits = [
+   "ca14eab211d76e27da9c5eb48866bd35b7f0ae8c"
+]
