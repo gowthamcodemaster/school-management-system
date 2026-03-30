@@ -24,7 +24,11 @@
     "prisma:studio": "prisma studio",
     "prisma:seed": "ts-node prisma/seed.ts",
     "db:push": "prisma db push",
-    "db:reset": "prisma migrate reset"
+    "db:reset": "prisma migrate reset",
+    "e2e": "dotenv -e .env.test -- cucumber-js --config cucumber.js",
+    "e2e:smoke": "dotenv -e .env.test -- cucumber-js --config cucumber.js --tags @smoke",
+    "e2e:debug": "dotenv -e .env.test -- cucumber-js --config cucumber.js --fail-fast",
+    "e2e:setup": "dotenv -e .env.test -- prisma migrate deploy"
   },
   "dependencies": {
     "@nestjs/bull": "^10.2.1",
@@ -43,6 +47,7 @@
     "class-validator": "^0.14.1",
     "compression": "^1.7.4",
     "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.3",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
@@ -50,6 +55,8 @@
     "rxjs": "^7.8.1"
   },
   "devDependencies": {
+    "@cucumber/cucumber": "^12.7.0",
+    "@cucumber/pretty-formatter": "^3.2.0",
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.18.0",
     "@nestjs/cli": "^11.0.0",
@@ -61,15 +68,18 @@
     "@types/compression": "^1.7.5",
     "@types/express": "^5.0.0",
     "@types/jest": "^30.0.0",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^22.10.7",
     "@types/passport-jwt": "^4.0.1",
     "@types/passport-local": "^1.0.38",
     "@types/supertest": "^6.0.2",
     "@typescript-eslint/eslint-plugin": "^8.18.2",
     "@typescript-eslint/parser": "^8.18.2",
+    "dotenv-cli": "^11.0.0",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.2",
+    "expect": "^30.3.0",
     "globals": "^16.0.0",
     "jest": "^30.0.0",
     "prettier": "^3.3.3",
@@ -81,6 +91,7 @@
     "ts-loader": "^9.5.2",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.21.0",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.20.0"
   },
