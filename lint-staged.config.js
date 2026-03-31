@@ -14,10 +14,6 @@ export default {
     'pnpm exec prettier --write',
   ],
 
-  '**/*.prisma': [
-    'pnpm exec prisma format',
-  ],
-
   '**/*.{json,yml,yaml,md}': [
     'pnpm exec prettier --write',
   ],
