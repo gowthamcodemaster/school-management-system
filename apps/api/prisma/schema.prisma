@@ -33,9 +33,45 @@ model User {
   updatedAt DateTime @updatedAt
   
   teacher   Teacher?
-  
+
+  // ── Auth fields ──────────────────────────
+  failedLoginAttempts Int       @default(0)
+  lockedUntil         DateTime?
+  lastLoginAt         DateTime?
+  passwordChangedAt   DateTime?
+
+  // ── MFA fields ───────────────────────────
+  mfaEnabled Boolean    @default(false)
+  mfaSecret  String?    // TOTP secret — encrypted at application level
+  mfaMethod  MfaMethod?
+
+  refreshTokens RefreshToken[]
+
+  @@index([email])  
   @@map("users")
 }
+
+// ============================================
+// REFRESH TOKEN MODEL
+// ============================================
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  token     String   @unique
+  expiresAt DateTime
+  isRevoked Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([token])
+  @@map("refresh_tokens")
+}
+
 
 enum UserRole {
   SUPER_ADMIN
@@ -44,6 +80,12 @@ enum UserRole {
   STUDENT
   PARENT
 }
+
+enum MfaMethod {
+  TOTP
+  EMAIL_OTP
+}
+
 
 // ============================================
 // STUDENT MODEL
