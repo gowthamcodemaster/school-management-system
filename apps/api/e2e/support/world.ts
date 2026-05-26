@@ -15,6 +15,7 @@ export class ApiWorld extends World {
   authToken?: string;
   refreshToken?: string;
   response?: supertest.Response;
+  response2?: supertest.Response;
 
   constructor(options: IWorldOptions) {
     super(options);
