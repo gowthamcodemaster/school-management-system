@@ -6,7 +6,7 @@
   "files": [
     "tsconfig.*.json",
     "eslint-preset.js",
-    "./jest/jest.config.*.js"
+    "./jest/jest.config.*.cjs"
   ],
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.0.0",
@@ -23,6 +23,9 @@
     "identity-obj-proxy": "^3.0.0"
   },
   "exports": {
-    "./eslint-preset": "./eslint-preset.js"
+    "./eslint-preset": "./eslint-preset.js",
+    "./jest/jest.config.base": "./jest/jest.config.base.cjs",
+    "./jest/jest.config.react": "./jest/jest.config.react.cjs",
+    "./jest/jest.config.node": "./jest/jest.config.node.cjs"
   }
 }
