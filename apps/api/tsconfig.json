@@ -27,6 +27,6 @@
     },
     "types": ["node", "jest"]
   },
-  "include": ["src/**/*", "e2e/**/*", "test/**/*"],
+  "include": ["src/**/*", "e2e/**/*", "test/**/*", "prisma/**/*"],
   "exclude": ["node_modules", "dist"]
 }

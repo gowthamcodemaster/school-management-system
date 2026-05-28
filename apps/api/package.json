@@ -24,10 +24,10 @@
     "prisma:studio": "prisma studio",
     "prisma:seed": "ts-node prisma/seed.ts",
     "db:push": "prisma db push",
-    "e2e": "dotenv -e .env.test -- cross-env NODE_OPTIONS=\"--import tsx/esm\" pnpm exec cucumber-js --config cucumber.js",
-    "e2e:smoke": "dotenv -e .env.test -- cross-env NODE_OPTIONS=\"--import tsx/esm\" pnpm exec cucumber-js --config cucumber.js --tags @smoke",
-    "e2e:debug": "dotenv -e .env.test -- cross-env NODE_OPTIONS=\"--import tsx/esm\" pnpm exec cucumber-js --config cucumber.js --fail-fast",
-    "e2e:setup": "dotenv -e .env.test -- prisma migrate deploy"
+    "e2e": "pnpm exec dotenv -e .env.test -- cross-env NODE_OPTIONS=\"--import tsx/esm\" pnpm exec cucumber-js --config cucumber.js",
+    "e2e:smoke": "pnpm exec dotenv -e .env.test -- cross-env NODE_OPTIONS=\"--import tsx/esm\" pnpm exec cucumber-js --config cucumber.js --tags @smoke",
+    "e2e:debug": "pnpm exec dotenv -e .env.test -- cross-env NODE_OPTIONS=\"--import tsx/esm\" pnpm exec cucumber-js --config cucumber.js --fail-fast",
+    "e2e:setup": "pnpm exec dotenv -e .env.test -- prisma migrate deploy"
   },
   "dependencies": {
     "@nestjs/bull": "^10.2.1",
