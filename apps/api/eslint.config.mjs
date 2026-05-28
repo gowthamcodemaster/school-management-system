@@ -13,13 +13,8 @@ export default tseslint.config(
   {
     languageOptions: {
       parserOptions: {
-       projectService: {
-      allowDefaultProject: ['src/*.spec.ts', 'test/*.spec.ts', 'e2e/*.ts',
-    'e2e/support/*.ts',
-    'e2e/step-definitions/*.ts',
-    'e2e/step-definitions/auth/*.ts'],
-    },
-    tsconfigRootDir: import.meta.dirname,
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
       },
     },
   },

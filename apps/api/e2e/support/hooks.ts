@@ -1,7 +1,21 @@
 // apps/api/e2e/support/hooks.ts
 import { Before, After, BeforeAll, AfterAll, Status } from '@cucumber/cucumber';
-import { ApiWorld } from './world';
 import * as bcrypt from 'bcryptjs';
+
+interface WorldLike {
+  init: () => Promise<void>;
+  destroy: () => Promise<void>;
+  response?: { body: unknown };
+  attach: (data: string, mimeType: string) => void;
+  prisma: {
+    user: {
+      upsert: (args: unknown) => Promise<unknown>;
+    };
+    refreshToken?: {
+      deleteMany: (args?: unknown) => Promise<unknown>;
+    };
+  };
+}
 
 // ── Suite level ────────────────────────────────────────────────────
 BeforeAll(function () {
@@ -21,12 +35,12 @@ AfterAll(function () {
 });
 
 // ── Scenario level ─────────────────────────────────────────────────
-Before(async function (this: ApiWorld) {
+Before(async function (this: WorldLike) {
   await this.init();
   await seedTestData(this);
 });
 
-After(async function (this: ApiWorld, scenario) {
+After(async function (this: WorldLike, scenario) {
   if (scenario.result?.status === Status.FAILED && this.response) {
     this.attach(
       JSON.stringify(this.response.body, null, 2),
@@ -38,7 +52,7 @@ After(async function (this: ApiWorld, scenario) {
 });
 
 // ── Test data helpers ──────────────────────────────────────────────
-async function seedTestData(world: ApiWorld): Promise<void> {
+async function seedTestData(world: WorldLike): Promise<void> {
   const hashedPassword = await bcrypt.hash('TestPassword123!', 10);
 
   await world.prisma.user.upsert({
@@ -57,7 +71,7 @@ async function seedTestData(world: ApiWorld): Promise<void> {
 
 type DeletableModel = { deleteMany: () => Promise<unknown> };
 
-async function cleanTestData(world: ApiWorld): Promise<void> {
+async function cleanTestData(world: WorldLike): Promise<void> {
   // Explicit list — no dynamic key access, no injection risk
   const models: DeletableModel[] = [
     world.prisma.user as unknown as DeletableModel,

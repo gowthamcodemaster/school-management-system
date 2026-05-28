@@ -1,4 +1,3 @@
-// apps/api/cucumber.js
 const common = {
   paths: ['e2e/features/**/*.feature'],
   import: [
@@ -6,7 +5,7 @@ const common = {
     'e2e/support/world.ts',
     'e2e/step-definitions/**/*.steps.ts',
   ],
-  loader: ['tsx'],
+  // loader: ['tsx'],                               // ← remove this line
   format: [
     '@cucumber/pretty-formatter',
     'json:e2e/reports/cucumber-report.json',
@@ -16,15 +15,4 @@ const common = {
   retry: 1,
   timeout: 30000,
   parallel: 1,
-};
-
-export default {
-  default: common,
-
-  smoke: {
-    ...common,
-    format: ['@cucumber/pretty-formatter'],
-    tags: '@smoke',
-    timeout: 15000,
-  },
 };
