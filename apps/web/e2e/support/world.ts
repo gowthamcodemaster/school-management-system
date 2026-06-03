@@ -10,7 +10,7 @@ export class CustomWorld extends World {
 
   constructor(options: IWorldOptions) {
     super(options)
-    this.baseUrl = options.parameters?.baseUrl || process.env.BASE_URL || 'http://localhost:4000'
+    this.baseUrl = options.parameters?.baseUrl || process.env.BASE_URL || 'http://localhost:3000'
   }
 
   async init(): Promise<void> {

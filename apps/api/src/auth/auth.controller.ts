@@ -21,7 +21,7 @@ import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { ConfigService } from '@nestjs/config';
-import { getCookieOptions } from '@/config/cookie.config';
+// import { getCookieOptions } from '@/config/cookie.config';
 
 // ── Cookie config ──────────────────────────────────────────────────
 const REFRESH_TOKEN_COOKIE = 'refresh_token';
@@ -56,16 +56,14 @@ export class AuthController {
 
     // If MFA is enabled, return partial token + mfaRequired flag
     if (user.mfaEnabled) {
-      const tokens = await this.authService.generateTokens(user.id, user.role);
-      res.cookie(
-        'refresh_token',
-        tokens.refreshToken,
-        getCookieOptions(this.config),
+      const mfaToken = await this.authService.generateMfaPartialToken(
+        user.id,
+        user.role,
       );
       res.json({
         mfaRequired: true,
         mfaMethod: user.mfaMethod,
-        mfaToken: tokens.accessToken, // short-lived token for MFA step
+        mfaToken, // short-lived token for MFA step
       });
       return;
     }

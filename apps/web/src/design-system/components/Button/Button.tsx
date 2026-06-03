@@ -31,12 +31,25 @@ const buttonVariants = cva(
 export interface ButtonProps
   extends ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
   asChild?: boolean
+  fullWidth?: boolean
+  isLoading?: boolean
+  loadingText?: string
 }
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, ...props }, ref) => {
+  (
+    { className, variant, size, fullWidth, isLoading, loadingText, children, disabled, ...props },
+    ref
+  ) => {
     return (
-      <button className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />
+      <button
+        className={cn(buttonVariants({ variant, size, className }), fullWidth && 'w-full')}
+        disabled={disabled || isLoading}
+        ref={ref}
+        {...props}
+      >
+        {isLoading && loadingText ? loadingText : children}
+      </button>
     )
   }
 )

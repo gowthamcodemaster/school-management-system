@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 // apps/web/src/app/auth/login/_components/MfaForm/MfaForm.stories.tsx
 import type { Meta, StoryObj } from '@storybook/nextjs'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'

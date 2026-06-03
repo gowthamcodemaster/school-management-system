@@ -149,6 +149,19 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
+  async generateMfaPartialToken(
+    userId: string,
+    role: UserRole,
+  ): Promise<string> {
+    return this.jwt.signAsync(
+      { sub: userId, role, type: 'mfa_partial' },
+      {
+        secret: this.config.get<string>('JWT_SECRET'),
+        expiresIn: '5m', // short-lived — only for MFA step
+      },
+    );
+  }
+
   // ── refreshTokens ───────────────────────────────────────────────
   async refreshTokens(refreshToken: string): Promise<TokenPair> {
     const storedToken = await this.prisma.refreshToken.findUnique({

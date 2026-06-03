@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 // apps/web/src/app/auth/login/_components/LoginForm/LoginForm.tsx
 'use client'
 
@@ -6,13 +5,13 @@ import React, { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
-import { Logo } from '../../../design-system/components/Logo/Logo'
-import { Input } from '../../../design-system/components/Input/Input'
-import { Button } from '../../../design-system/components/Button/Button'
-import { Alert } from '../../../design-system/components/Alert/Alert'
-import { useLogin } from '../../../lib/hooks/useAuth'
-import { loginSchema, type LoginFormValues } from '../../../lib/validations/auth.schema'
-import type { LoginResponse } from '../../../lib/api/auth.api'
+import { Logo } from '../../../../../design-system/components/Logo/Logo'
+import { Input } from '../../../../../design-system/components/Input/Input'
+import { Button } from '../../../../../design-system/components/Button/Button'
+import { Alert } from '../../../../../design-system/components/Alert/Alert'
+import { useLogin } from '../../../../../lib/hooks/useAuth'
+import { loginSchema, type LoginFormValues } from '../../../../../lib/validations/auth.schema'
+import type { LoginResponse } from '../../../../../lib/api/auth.api'
 
 export interface LoginFormProps {
   onMfaRequired?: (data: { mfaToken: string; mfaMethod: 'TOTP' | 'EMAIL_OTP' }) => void

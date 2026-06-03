@@ -44,6 +44,12 @@ model User {
   mfaEnabled Boolean    @default(false)
   mfaSecret  String?    // TOTP secret — encrypted at application level
   mfaMethod  MfaMethod?
+  lastUsedMfaCode String?   // prevents TOTP replay attacks
+  mfaFailedAttempts Int @default(0)
+  emailOtpCode    String?   // hashed Email OTP
+  emailOtpSentAt  DateTime? // for cooldown check
+  emailOtpExpiry  DateTime? // OTP expiry
+
 
   refreshTokens RefreshToken[]
 

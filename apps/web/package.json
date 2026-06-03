@@ -17,11 +17,13 @@
     "build-storybook": "storybook build",
     "clean": "rm -rf .next .turbo node_modules",
     "analyze": "ANALYZE=true next build",
-    "e2e": "cucumber-js --config cucumber.js",
-    "e2e:smoke": "cucumber-js --config cucumber.js --profile smoke",
-    "e2e:debug": "HEADLESS=false SLOW_MO=500 cucumber-js --config cucumber.js",
-    "e2e:screenshots": "DEBUG_SCREENSHOTS=true cucumber-js --config cucumber.js",
-    "e2e:report": "cucumber-js --config cucumber.js && open e2e/reports/cucumber-report.html"
+    "e2e": "node --import tsx ./node_modules/@cucumber/cucumber/bin/cucumber-js --config cucumber.js",
+    "e2e:smoke": "node --import tsx ./node_modules/@cucumber/cucumber/bin/cucumber-js --config cucumber.js --profile smoke",
+    "e2e:debug": "HEADLESS=false SLOW_MO=500 node --import tsx ./node_modules/@cucumber/cucumber/bin/cucumber-js --config cucumber.js",
+    "e2e:screenshots": "DEBUG_SCREENSHOTS=true node --import tsx ./node_modules/@cucumber/cucumber/bin/cucumber-js --config cucumber.js",
+    "e2e:report": "node --import tsx ./node_modules/@cucumber/cucumber/bin/cucumber-js --config cucumber.js && open e2e/reports/cucumber-report.html",
+    "e2e:serve": "start-server-and-test dev http://localhost:3000 e2e",
+    "e2e:serve:smoke": "start-server-and-test dev http://localhost:3000 e2e:smoke"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
@@ -69,6 +71,7 @@
     "postcss": "^8.4.33",
     "prettier": "^3.2.4",
     "prettier-plugin-tailwindcss": "^0.5.11",
+    "start-server-and-test": "^3.0.5",
     "storybook": "^10.2.19",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",

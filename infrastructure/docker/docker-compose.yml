@@ -8,7 +8,7 @@ networks:
     ipam:
       config:
         - subnet: 172.20.0.0/16
-  
+
 #Define volumes (persist data)
 volumes:
   postgres-data:
@@ -24,14 +24,14 @@ services:
     image: postgres:16-alpine
     container_name: school_postgres
     restart: unless-stopped
-   
+
     #Environmental variables for DB setup
     environment:
       #DB Credentials
       POSTGRES_USER: ${POSTGRES_USER:-school_admin}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-securepassword123}
       POSTGRES_DB: ${POSTGRES_DB:-school_management_db}
-   
+
       # Performance Tuning
       POSTGRES_SHARED_BUFFERS: 256MB
       POSTGRES_EFFECTIVE_CACHE_SIZE: 768MB
@@ -39,9 +39,9 @@ services:
       POSTGRES_MAINTENANCE_WORK_MEM: 64MB
 
       #Logging
-      POSTGRES_LOGGING_COLLECTOR: "on"
-      POSTGRES_LOG_STATEMENT: "all"
-      POSTGRES_LOG_DURATION: "on"
+      POSTGRES_LOGGING_COLLECTOR: 'on'
+      POSTGRES_LOG_STATEMENT: 'all'
+      POSTGRES_LOG_DURATION: 'on'
 
       #Timezone
       TZ: Asia/Kolkata
@@ -49,28 +49,32 @@ services:
 
     #ports mapping
     ports:
-      - "5432:5432"
-    
+      - '5432:5432'
+
     #volume mapping
     volumes:
-    #Data persistence
+      #Data persistence
       - postgres-data:/var/lib/postgresql/data
-    #Custom config
+      #Custom config
       - ./postgres.conf:/etc/postgresql/postgresql.conf
-    #Initialization scripts
+      #Initialization scripts
       - ./init-scripts:/docker-entrypoint-initdb.d
-    #Backup storage
+      #Backup storage
       - ./db/data/backups:/backups
 
-  #Heath Check for PostgreSQL
+    #Heath Check for PostgreSQL
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-school_admin} -d ${POSTGRES_DB:-school_management_db}"]
+      test:
+        [
+          'CMD-SHELL',
+          'pg_isready -U ${POSTGRES_USER:-school_admin} -d ${POSTGRES_DB:-school_management_db}',
+        ]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 30s
 
-  #Resource limits
+    #Resource limits
     deploy:
       resources:
         limits:
@@ -94,16 +98,16 @@ services:
 
     #ports mapping
     ports:
-      - "6379:6379"
+      - '6379:6379'
 
     #volume mapping
     volumes:
       - redis-data:/data
       - ./redis.conf:/usr/local/etc/redis/redis.conf
 
-  #Health Check for Redis
+    #Health Check for Redis
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 30s
       timeout: 10s
       retries: 5
@@ -123,7 +127,7 @@ services:
       - school_network
 
     #Command to use custom config
-    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    command: ['redis-server', '/usr/local/etc/redis/redis.conf']
 
   #BULLMQ Redis Adapter for Job Queue Management
   bull-board:
@@ -134,11 +138,11 @@ services:
     environment:
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      BULL_PREFIX: "bull"
+      BULL_PREFIX: 'bull'
 
     #ports mapping
     ports:
-      - "3001:3000"
+      - '3001:3000'
 
     depends_on:
       redis:
@@ -146,7 +150,7 @@ services:
 
     networks:
       - school_network
-  
+
   #pgAdmin 4 - Database Management Tool
   pgadmin:
     image: dpage/pgadmin4:latest
@@ -158,12 +162,12 @@ services:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-gowthamsway1995@gmail.com}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-adminpassword123}
       PGADMIN_LISTEN_PORT: 80
-      PGADMIN_CONFIG_SERVER_MODE: "False"
-      PGADMIN_COFIG_MASTER_PASSWORD_REQUIRED: "False"
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_COFIG_MASTER_PASSWORD_REQUIRED: 'False'
 
     #ports mapping
     ports:
-      - "5050:80"
+      - '5050:80'
 
     #volume mapping
     volumes:
@@ -185,7 +189,7 @@ services:
 
     #Environmental variables for PgBouncer setup
     environment:
-      DATABASE_URL: "postgres://${POSTGRES_USER:-school_admin}:${POSTGRES_PASSWORD:-securepassword123}@postgres:5432/${POSTGRES_DB:-school_management_db}"
+      DATABASE_URL: 'postgres://${POSTGRES_USER:-school_admin}:${POSTGRES_PASSWORD:-securepassword123}@postgres:5432/${POSTGRES_DB:-school_management_db}'
       POOL_MODE: transaction
       MAX_CLIENT_CONN: 1000
       DEFAULT_POOL_SIZE: 25
@@ -194,11 +198,24 @@ services:
 
     #ports mapping
     ports:
-      - "6432:5432"
+      - '6432:5432'
 
     depends_on:
       postgres:
         condition: service_healthy
+
+    networks:
+      - school_network
+
+  # ── Mailhog — Local Email Catcher ─────────────────────────────
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: school_mailhog
+    restart: unless-stopped
+
+    ports:
+      - '1025:1025' # SMTP port — NestJS sends emails here
+      - '8025:8025' # Web UI — view emails at http://localhost:8025
 
     networks:
       - school_network
@@ -215,7 +232,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-securepassword123}
       POSTGRES_DB: ${POSTGRES_DB:-school_management_db}
       POSTGRES_HOST: postgres
-      BACKUP_SCHEDULE: "0 2 * * *"  # Daily at 2 AM
+      BACKUP_SCHEDULE: '0 2 * * *' # Daily at 2 AM
       BACKUP_RETENTION_DAYS: 7
       BACKUP_RETENTION_WEEKS: 4
       BACKUP_RETENTION_MONTHS: 6

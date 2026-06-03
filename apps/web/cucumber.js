@@ -2,7 +2,6 @@
 const common = {
   paths: ['e2e/features/**/*.feature'],
   import: ['e2e/support/hooks.ts', 'e2e/support/world.ts', 'e2e/step-definitions/**/*.steps.ts'],
-  loader: ['tsx'],
   format: [
     '@cucumber/pretty-formatter',
     'json:e2e/reports/cucumber-report.json',
@@ -14,7 +13,7 @@ const common = {
   parallel: 1,
 }
 
-export default {
+module.exports = {
   default: common,
 
   smoke: {

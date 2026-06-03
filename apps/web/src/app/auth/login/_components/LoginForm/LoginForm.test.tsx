@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 // apps/web/src/app/auth/login/_components/LoginForm/LoginForm.test.tsx
 import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
@@ -12,11 +11,11 @@ jest.mock('next/navigation', () => ({
   useRouter: () => ({ push: jest.fn() }),
 }))
 
-jest.mock('../../../lib/hooks/useAuth', () => ({
+jest.mock('../../../../../lib/hooks/useAuth', () => ({
   useLogin: jest.fn(),
 }))
 
-import { useLogin } from '../../../lib/hooks/useAuth'
+import { useLogin } from '../../../../../lib/hooks/useAuth'
 
 const mockMutate = jest.fn()
 const defaultUseMutation = {

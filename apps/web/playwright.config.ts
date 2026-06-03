@@ -23,7 +23,7 @@ export default defineConfig({
 
   use: {
     // Base URL — your Next.js dev server
-    baseURL: process.env.BASE_URL || 'http://localhost:4000',
+    baseURL: process.env.BASE_URL || 'http://localhost:4000/api/v1',
 
     // Always collect traces for failed tests
     trace: 'retain-on-failure',
@@ -52,7 +52,7 @@ export default defineConfig({
   // Start Next.js dev server before running tests
   webServer: {
     command: 'pnpm dev',
-    url: 'http://localhost:4000',
+    url: 'http://localhost:4000/api/v1',
     reuseExistingServer: true,
     timeout: 120_000,
   },

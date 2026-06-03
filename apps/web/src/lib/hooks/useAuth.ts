@@ -35,6 +35,22 @@ export function useMfaVerify() {
   })
 }
 
+export function useMfaSetup(accessToken: string) {
+  return useMutation({
+    mutationFn: () => authApi.setupMfa(accessToken),
+  })
+}
+
+export function useMfaSetupVerify() {
+  return useMutation({
+    mutationFn: (data: { code: string; accessToken: string }) => authApi.verifySetup(data),
+  })
+}
+
+export function useSendOtp() {
+  return useMutation({ mutationFn: (data: { mfaToken: string }) => authApi.sendOtp(data.mfaToken) })
+}
+
 // ── useLogout hook ─────────────────────────────────────────────────
 export function useLogout() {
   const router = useRouter()

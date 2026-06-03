@@ -1,10 +1,9 @@
-/* eslint-disable prettier/prettier */
 // apps/web/src/app/auth/login/page.tsx
 'use client'
 
 import React, { useState } from 'react'
-import { LoginForm } from '../../components/LoginForm/LoginForm'
-import { MfaForm } from '../../components//MfaForm/MfaForm'
+import { LoginForm } from './_components/LoginForm/LoginForm'
+import { MfaForm } from './_components/MfaForm/MfaForm'
 
 type LoginStep = 'credentials' | 'mfa'
 

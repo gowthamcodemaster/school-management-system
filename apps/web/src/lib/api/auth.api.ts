@@ -56,13 +56,35 @@ async function apiPost<TBody, TResponse>(
   return res.json() as Promise<TResponse>
 }
 
+async function apiGet<TResponse>(path: string, token?: string): Promise<TResponse> {
+  const res = await fetch(`${API_BASE}${path}`, {
+    method: 'GET',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  })
+
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ message: 'An error occurred' }))
+    throw new Error((error as { message?: string }).message ?? 'An error occurred')
+  }
+
+  return res.json() as Promise<TResponse>
+}
+
 // ── Auth API functions ─────────────────────────────────────────────
 export const authApi = {
   login: (data: LoginRequest) => apiPost<LoginRequest, LoginResponse>('/auth/login', data),
 
   verifyMfa: (data: MfaVerifyRequest) =>
     apiPost<MfaVerifyRequest, LoginResponse>('/auth/mfa/verify', data),
-
+  setupMfa: (accessToken: string) =>
+    apiGet<{ secret: string; qrCode: string }>('/auth/mfa/setup', accessToken),
+  verifySetup: (data: { code: string; accessToken: string }) =>
+    apiPost('/auth/mfa/setup/verify', { code: data.code }, data.accessToken),
+  sendOtp: (mfaToken: string) => apiPost('/auth/mfa/send-otp', { mfaToken }),
   logout: (token: string) => apiPost<Record<string, never>, void>('/auth/logout', {}, token),
 
   refresh: () => apiPost<Record<string, never>, RefreshResponse>('/auth/refresh', {}),
