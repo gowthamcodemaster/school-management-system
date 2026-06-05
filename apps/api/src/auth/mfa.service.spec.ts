@@ -7,13 +7,16 @@ jest.mock('otplib', () => ({
 
 import { Test, TestingModule } from '@nestjs/testing';
 import { UnauthorizedException, BadRequestException } from '@nestjs/common';
+import { getQueueToken } from '@nestjs/bull';
 import { MfaService } from './mfa.service';
 import { PrismaService } from '../database/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { MailService } from './mail/mail.service';
 import { MfaMethod, UserRole } from '@prisma/client';
 import { AuthService } from './auth.service';
+import { EncryptionService } from '@/common/services/encryption.service';
+import { RedisOtpService } from '@/common/services/redis-otp.service';
+import { MAIL_QUEUE } from './mail/mail.processor';
 
 // ── Mocks ──────────────────────────────────────────────────────────
 const mockPrismaService = {
@@ -42,12 +45,29 @@ const mockConfigService = {
   }),
 };
 
-const mockMailService = {
-  sendOtp: jest.fn(),
-};
-
 const mockAuthService = {
   generateTokens: jest.fn(),
+};
+
+const mockEncryptionService = {
+  encrypt: jest.fn(),
+  decrypt: jest.fn(),
+};
+
+const mockRedisOtpService = {
+  storeEmailOtp: jest.fn(),
+  deleteEmailOtp: jest.fn(),
+  verifyEmailOtp: jest.fn(),
+  getMfaAttempts: jest.fn(),
+  incrementMfaAttempts: jest.fn(),
+  resetMfaAttempts: jest.fn(),
+  isOtpOnCooldown: jest.fn(),
+  setOtpCooldown: jest.fn(),
+  markTotpCodeUsed: jest.fn(),
+};
+
+const mockMailQueue = {
+  add: jest.fn(),
 };
 
 // ── Fixtures ───────────────────────────────────────────────────────
@@ -80,9 +100,10 @@ describe('MfaService', () => {
         { provide: PrismaService, useValue: mockPrismaService },
         { provide: JwtService, useValue: mockJwtService },
         { provide: ConfigService, useValue: mockConfigService },
-
-        { provide: MailService, useValue: mockMailService },
+        { provide: EncryptionService, useValue: mockEncryptionService },
+        { provide: RedisOtpService, useValue: mockRedisOtpService },
         { provide: AuthService, useValue: mockAuthService },
+        { provide: getQueueToken(MAIL_QUEUE), useValue: mockMailQueue },
       ],
     }).compile();
 
@@ -92,6 +113,20 @@ describe('MfaService', () => {
       accessToken: 'mock-access-token',
       refreshToken: 'mock-refresh-token',
     });
+    mockEncryptionService.encrypt.mockReturnValue('encrypted-secret');
+    mockEncryptionService.decrypt.mockReturnValue('decrypted-secret');
+    mockRedisOtpService.getMfaAttempts.mockResolvedValue(0);
+    mockRedisOtpService.markTotpCodeUsed.mockResolvedValue(true);
+    mockRedisOtpService.resetMfaAttempts.mockResolvedValue(undefined);
+    mockRedisOtpService.incrementMfaAttempts.mockResolvedValue(undefined);
+    mockRedisOtpService.isOtpOnCooldown.mockResolvedValue({
+      onCooldown: false,
+      remainingSeconds: 0,
+    });
+    mockRedisOtpService.storeEmailOtp.mockResolvedValue(undefined);
+    mockRedisOtpService.setOtpCooldown.mockResolvedValue(undefined);
+    mockRedisOtpService.deleteEmailOtp.mockResolvedValue(undefined);
+    mockMailQueue.add.mockResolvedValue(undefined);
   });
 
   it('should be defined', () => {
@@ -150,7 +185,6 @@ describe('MfaService', () => {
         mfaMethod: MfaMethod.TOTP,
       });
 
-      // Mock otplib to return true for verification
       jest
         .spyOn(
           service as unknown as { verifyTotpCode: () => boolean },
@@ -202,7 +236,6 @@ describe('MfaService', () => {
         sub: mockUser.id,
         type: 'mfa_partial',
       });
-      mockJwtService.signAsync.mockResolvedValue('full-access-token');
       jest
         .spyOn(
           service as unknown as { verifyTotpCode: () => boolean },
@@ -238,21 +271,12 @@ describe('MfaService', () => {
     });
 
     it('TC-023: should throw UnauthorizedException for replayed TOTP code', async () => {
-      const userWithUsedCode = {
-        ...mockUserWithTotp,
-        lastUsedMfaCode: '123456',
-      };
-      mockPrismaService.user.findUnique.mockResolvedValue(userWithUsedCode);
+      mockPrismaService.user.findUnique.mockResolvedValue(mockUserWithTotp);
       mockJwtService.verifyAsync.mockResolvedValue({
         sub: mockUser.id,
         type: 'mfa_partial',
       });
-      jest
-        .spyOn(
-          service as unknown as { verifyTotpCode: () => boolean },
-          'verifyTotpCode',
-        )
-        .mockReturnValue(true);
+      mockRedisOtpService.markTotpCodeUsed.mockResolvedValue(false); // already used
 
       await expect(
         service.verifyMfaCode('partial-mfa-token', '123456', MfaMethod.TOTP),
@@ -287,26 +311,25 @@ describe('MfaService', () => {
         sub: mockUser.id,
         type: 'mfa_partial',
       });
-      mockPrismaService.user.update.mockResolvedValue(mockUser);
-      mockMailService.sendOtp.mockResolvedValue(undefined);
 
       await service.sendEmailOtp('partial-mfa-token');
 
-      expect(mockMailService.sendOtp).toHaveBeenCalledWith(
-        mockUser.email,
-        expect.any(String), // OTP code
+      expect(mockMailQueue.add).toHaveBeenCalledWith(
+        'send-otp',
+        expect.objectContaining({ email: mockUser.email }),
+        expect.any(Object),
       );
     });
 
     it('TC-022: should not send OTP before cooldown period', async () => {
-      const userWithRecentOtp = {
-        ...mockUser,
-        emailOtpSentAt: new Date(Date.now() - 30 * 1000), // 30 seconds ago
-      };
-      mockPrismaService.user.findUnique.mockResolvedValue(userWithRecentOtp);
+      mockPrismaService.user.findUnique.mockResolvedValue(mockUser);
       mockJwtService.verifyAsync.mockResolvedValue({
         sub: mockUser.id,
         type: 'mfa_partial',
+      });
+      mockRedisOtpService.isOtpOnCooldown.mockResolvedValue({
+        onCooldown: true,
+        remainingSeconds: 30,
       });
 
       await expect(service.sendEmailOtp('partial-mfa-token')).rejects.toThrow(
@@ -314,49 +337,34 @@ describe('MfaService', () => {
       );
     });
 
-    it('TC-020: should invalidate old OTP when new one is sent', async () => {
+    it('TC-020: should store new OTP in Redis when sent', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(mockUser);
       mockJwtService.verifyAsync.mockResolvedValue({
         sub: mockUser.id,
         type: 'mfa_partial',
       });
-      mockPrismaService.user.update.mockResolvedValue(mockUser);
-      mockMailService.sendOtp.mockResolvedValue(undefined);
 
       await service.sendEmailOtp('partial-mfa-token');
 
-      expect(mockPrismaService.user.update).toHaveBeenCalledWith(
-        expect.objectContaining({
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          data: expect.objectContaining({
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            emailOtpCode: expect.any(String),
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            emailOtpSentAt: expect.any(Date),
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            emailOtpExpiry: expect.any(Date),
-          }),
-        }),
+      expect(mockRedisOtpService.storeEmailOtp).toHaveBeenCalledWith(
+        mockUser.id,
+        expect.any(String),
       );
     });
 
     it('TC-021: should terminate session after 3 failed MFA attempts', async () => {
-      const userWith2Fails = {
-        ...mockUserWithTotp,
-        mfaFailedAttempts: 2,
-      };
-      mockPrismaService.user.findUnique.mockResolvedValue(userWith2Fails);
+      mockPrismaService.user.findUnique.mockResolvedValue(mockUserWithTotp);
       mockJwtService.verifyAsync.mockResolvedValue({
         sub: mockUser.id,
         type: 'mfa_partial',
       });
+      mockRedisOtpService.getMfaAttempts.mockResolvedValue(3); // already at max
       jest
         .spyOn(
           service as unknown as { verifyTotpCode: () => boolean },
           'verifyTotpCode',
         )
         .mockReturnValue(false);
-      mockPrismaService.user.update.mockResolvedValue({});
 
       await expect(
         service.verifyMfaCode('partial-mfa-token', '999999', MfaMethod.TOTP),
@@ -366,21 +374,13 @@ describe('MfaService', () => {
 
   // ── verifyEmailOtp ─────────────────────────────────────────────
   describe('verifyEmailOtp', () => {
-    const mockUserWithOtp = {
-      ...mockUser,
-      emailOtpCode: '654321',
-      emailOtpSentAt: new Date(),
-      emailOtpExpiry: new Date(Date.now() + 10 * 60 * 1000), // 10 mins
-    };
-
     it('TC-013: should return tokens for valid email OTP', async () => {
-      mockPrismaService.user.findUnique.mockResolvedValue(mockUserWithOtp);
+      mockPrismaService.user.findUnique.mockResolvedValue(mockUser);
       mockJwtService.verifyAsync.mockResolvedValue({
         sub: mockUser.id,
         type: 'mfa_partial',
       });
-      mockJwtService.signAsync.mockResolvedValue('full-access-token');
-      mockPrismaService.user.update.mockResolvedValue(mockUserWithOtp);
+      mockRedisOtpService.verifyEmailOtp.mockResolvedValue(true);
 
       const result = await service.verifyMfaCode(
         'partial-mfa-token',
@@ -392,11 +392,12 @@ describe('MfaService', () => {
     });
 
     it('TC-019: should throw UnauthorizedException for invalid email OTP', async () => {
-      mockPrismaService.user.findUnique.mockResolvedValue(mockUserWithOtp);
+      mockPrismaService.user.findUnique.mockResolvedValue(mockUser);
       mockJwtService.verifyAsync.mockResolvedValue({
         sub: mockUser.id,
         type: 'mfa_partial',
       });
+      mockRedisOtpService.verifyEmailOtp.mockResolvedValue(false);
 
       await expect(
         service.verifyMfaCode(
@@ -408,15 +409,12 @@ describe('MfaService', () => {
     });
 
     it('TC-020: should throw UnauthorizedException for expired email OTP', async () => {
-      const userWithExpiredOtp = {
-        ...mockUserWithOtp,
-        emailOtpExpiry: new Date(Date.now() - 1000), // expired
-      };
-      mockPrismaService.user.findUnique.mockResolvedValue(userWithExpiredOtp);
+      mockPrismaService.user.findUnique.mockResolvedValue(mockUser);
       mockJwtService.verifyAsync.mockResolvedValue({
         sub: mockUser.id,
         type: 'mfa_partial',
       });
+      mockRedisOtpService.verifyEmailOtp.mockResolvedValue(false); // expired/invalid
 
       await expect(
         service.verifyMfaCode(

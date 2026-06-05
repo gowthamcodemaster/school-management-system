@@ -9,13 +9,15 @@ import { MfaService } from './mfa.service';
 import { MfaController } from './mfa.controller';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { MfaPartialGuard } from './guards/mfa-partial.guard';
 import { DatabaseModule } from '../database/database.module';
 import { MailModule } from './mail/mail.module';
-
+import { CommonModule } from '../common/common.module';
 @Module({
   imports: [
     DatabaseModule,
     MailModule,
+    CommonModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -29,7 +31,13 @@ import { MailModule } from './mail/mail.module';
     }),
   ],
   controllers: [AuthController, MfaController],
-  providers: [AuthService, MfaService, JwtStrategy, JwtAuthGuard],
-  exports: [AuthService, MfaService, JwtAuthGuard],
+  providers: [
+    AuthService,
+    MfaService,
+    JwtStrategy,
+    JwtAuthGuard,
+    MfaPartialGuard,
+  ],
+  exports: [AuthService, MfaService, JwtAuthGuard, MfaPartialGuard],
 })
 export class AuthModule {}

@@ -2,8 +2,8 @@ import type { NextConfig } from 'next'
 import bundleAnalyzer from '@next/bundle-analyzer'
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  reactCompiler: true,
+  turbopack: {},
+  reactCompiler: process.env.NODE_ENV === 'production',
 }
 
 const withBundleAnalyzer = bundleAnalyzer({

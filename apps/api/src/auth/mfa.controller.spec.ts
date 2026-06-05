@@ -12,6 +12,7 @@ import { MfaMethod, UserRole } from '@prisma/client';
 import { MfaSetupVerifyDto } from './dto/mfa-setup-verify.dto';
 import { MfaVerifyDto } from './dto/mfa-verify.dto';
 import { MfaSendOtpDto } from './dto/mfa-send-otp.dto';
+import { MfaPartialGuard } from './guards/mfa-partial.guard';
 
 // ── Mocks ──────────────────────────────────────────────────────────
 const mockMfaService = {
@@ -29,6 +30,10 @@ const mockRequest = {
   },
 };
 
+const mockMfaPartialGuard = {
+  canActivate: jest.fn(),
+};
+
 describe('MfaController', () => {
   let controller: MfaController;
 
@@ -36,7 +41,10 @@ describe('MfaController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [MfaController],
       providers: [{ provide: MfaService, useValue: mockMfaService }],
-    }).compile();
+    })
+      .overrideGuard(MfaPartialGuard)
+      .useValue(mockMfaPartialGuard)
+      .compile();
 
     controller = module.get<MfaController>(MfaController);
     jest.clearAllMocks();

@@ -30,6 +30,7 @@
     "e2e:setup": "pnpm exec dotenv -e .env.test -- prisma migrate deploy"
   },
   "dependencies": {
+    "@nestjs-modules/ioredis": "^2.2.1",
     "@nestjs/bull": "^10.2.1",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.3",
@@ -46,6 +47,7 @@
     "class-validator": "^0.14.1",
     "compression": "^1.7.4",
     "helmet": "^8.0.0",
+    "ioredis": "^5.11.0",
     "jsonwebtoken": "^9.0.3",
     "nodemailer": "^8.0.10",
     "otplib": "^13.4.1",
@@ -116,6 +118,9 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/$1"
+    },
     "globals": {
       "ts-jest": {
         "tsconfig": "tsconfig.json"

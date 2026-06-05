@@ -52,8 +52,8 @@ async function apiPost<TBody, TResponse>(
     const error = await res.json().catch(() => ({ message: 'An error occurred' }))
     throw new Error((error as { message?: string }).message ?? 'An error occurred')
   }
-
-  return res.json() as Promise<TResponse>
+  const text = await res.text()
+  return (text ? JSON.parse(text) : undefined) as TResponse
 }
 
 async function apiGet<TResponse>(path: string, token?: string): Promise<TResponse> {
@@ -71,7 +71,8 @@ async function apiGet<TResponse>(path: string, token?: string): Promise<TRespons
     throw new Error((error as { message?: string }).message ?? 'An error occurred')
   }
 
-  return res.json() as Promise<TResponse>
+  const text = await res.text()
+  return (text ? JSON.parse(text) : undefined) as TResponse
 }
 
 // ── Auth API functions ─────────────────────────────────────────────

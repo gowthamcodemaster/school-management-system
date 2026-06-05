@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import configuration from './config/configuration';
 import { DatabaseModule } from './database/database.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
-
+import { RedisModule } from '@nestjs-modules/ioredis';
 @Module({
   imports: [
     // Configuration
@@ -24,6 +24,13 @@ import { AuthModule } from './auth/auth.module';
       },
     ]),
     AuthModule,
+    RedisModule.forRootAsync({
+      useFactory: (config: ConfigService) => ({
+        type: 'single',
+        url: config.get<string>('REDIS_URL') ?? 'redis://localhost:6379',
+      }),
+      inject: [ConfigService],
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

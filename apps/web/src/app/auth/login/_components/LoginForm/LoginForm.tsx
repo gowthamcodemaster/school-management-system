@@ -14,7 +14,11 @@ import { loginSchema, type LoginFormValues } from '../../../../../lib/validation
 import type { LoginResponse } from '../../../../../lib/api/auth.api'
 
 export interface LoginFormProps {
-  onMfaRequired?: (data: { mfaToken: string; mfaMethod: 'TOTP' | 'EMAIL_OTP' }) => void
+  onMfaRequired?: (data: {
+    mfaToken: string
+    mfaMethod: 'TOTP' | 'EMAIL_OTP'
+    mfaEnabled: boolean
+  }) => void
 }
 
 export function LoginForm({ onMfaRequired }: Readonly<LoginFormProps>) {
@@ -35,6 +39,7 @@ export function LoginForm({ onMfaRequired }: Readonly<LoginFormProps>) {
       onMfaRequired({
         mfaToken: data.mfaToken,
         mfaMethod: data.mfaMethod,
+        mfaEnabled: false,
       })
     }
   }, [login.data, onMfaRequired])
